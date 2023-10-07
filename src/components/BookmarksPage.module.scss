@@ -1,0 +1,249 @@
+
+*{
+    box-sizing: border-box;
+  }
+  :root{
+    --c0: #fff;
+    --c1: #012E40;
+    --c2: #024959;
+    --c3: #026773;
+    --c4: #3CA6A6;
+    --c5: #F2E3D5;
+    --c6: #000;
+  
+  
+    --margin-general: 8px;
+    @media (min-width: 768px) {
+      --margin-general: 16px;
+    }
+    @media (min-width: 1400px) {
+      --margin-general: 32px;
+    }
+  }
+  
+  body{
+    background-color: var(--c4);
+  }
+  
+  //   ____  ____   __   ____   ___  _  _
+  //  / ___)(  __) / _\ (  _ \ / __)/ )( \
+  //  \___ \ ) _) /    \ )   /( (__ ) __ (
+  //  (____/(____)\_/\_/(__\_) \___)\_)(_/
+  
+  
+  .bigContainer{
+    padding: var(--margin-general);
+  }
+  .editModeActions{
+    position: fixed;
+    display: flex;
+    top: 0;
+    right: 0;
+    >*{
+      padding: 6px;
+    }
+    .editModeRefreshButton{
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .editModeToggleButton{
+      font-size: 14px;
+      cursor: pointer;
+    }
+  }
+  
+  
+  .bigSearchContainer{
+    padding-bottom: var(--margin-general);
+    .bigSearch{
+      width: 100%;
+      font-size: 24px;
+      text-align: center;
+      padding: calc(var(--margin-general) * 0.4);
+    }
+  }
+  
+  //   ____  __    ___  ____
+  //  (_  _)/ _\  / __)/ ___)
+  //    )( /    \( (_ \\___ \
+  //   (__)\_/\_/ \___/(____/
+  
+  
+  ul.tags{
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    padding-bottom: var(--margin-general);
+    >li.tag{
+      display: inline-block;
+      width: auto;
+  
+      button {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+        font-size: 14px;
+        @media (min-width: 768px) {
+          padding: calc(var(--margin-general) * 0.2);
+          font-size: 1vw;
+        }
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+        &:hover:not(.catActive) {
+          transform: translate(-1px, -1px);
+  
+          &::before {
+            box-shadow: 12px 6px 8px rgba(0, 0, 0, 0.1);
+          }
+        }
+  
+        strong {
+          position: relative;
+  
+        }
+        span{
+          margin-left: 0.2em;
+        }
+      }
+      &.tagActive{
+        button{
+          background-color: #333;
+          color: #fff;
+        }
+      }
+      &.size1 button {
+        --mult: 1.4;
+        @media (min-width: 768px) {
+          padding: calc(var(--margin-general) * 0.2 * var(--mult));
+          font-size: calc(1vw * var(--mult));
+        }
+      }
+      &.size2 button{
+        --mult: 1.8;
+        @media (min-width: 768px) {
+          padding: calc(var(--margin-general) * 0.2 * var(--mult));
+          font-size: calc(1vw * var(--mult));
+        }
+      }
+  
+      &.size3 button{
+        --mult: 2.2;
+        @media (min-width: 768px) {
+          padding: calc(var(--margin-general) * 0.2 * var(--mult));
+          font-size: calc(1vw * var(--mult));
+        }
+      }
+    }
+  }
+  
+  
+  
+  //   ____   __    __  ____  __ _  _  _   __   ____  __ _  ____
+  //  (  _ \ /  \  /  \(  _ \(  / )( \/ ) / _\ (  _ \(  / )/ ___)
+  //   ) _ ((  O )(  O ))   / )  ( / \/ \/    \ )   / )  ( \___ \
+  //  (____/ \__/  \__/(__\_)(__\_)\_)(_/\_/\_/(__\_)(__\_)(____/
+  
+  
+  ul.bookmarks {
+     list-style: none;
+     margin: 0;
+     padding: 0;
+     display: grid;
+     grid-template-columns: repeat( 5, 1fr);
+     gap: calc(var(--margin-general) * 0.2);
+     > li.bookmark {
+       position: relative;
+       a.bookmarkLink{
+         display: flex;
+         flex-direction: column;
+         height: 100%;
+         position: relative;
+         align-items: center;
+         justify-content: center;
+         padding: calc(var(--margin-general) * 0.5);
+         font-size: 14px;
+         text-decoration: none;
+         color: var(--c6);
+         text-align: center;
+         background-color: var(--c5);
+         border-radius: 12px;
+         //&::before {
+         //  content: "";
+         //  inset: 4px;
+         //  display: block;
+         //  position: absolute;
+         //  border: 1px solid #f00;
+         //}
+         &:hover{
+           background-color: #999;
+         }
+         img{
+           max-width: 140px;
+           height: 32px;
+           margin-bottom: calc(var(--margin-general) * 0.3);
+         }
+         strong {
+           position: relative;
+  
+         }
+       }
+  
+       a.externalLink{
+         display: block;
+         position: relative;
+         text-decoration: none;
+         height: -1.4em;
+         margin: -1.8em 0 0 0.6em;
+       }
+       a.editLink{
+         display: block;
+         position: absolute;
+         right: 8px;
+         bottom: 7px;
+         text-decoration: none;
+       }
+     }
+   }
+  .tipBox{
+    display: flex;
+    align-items: center;
+    padding: calc(var(--margin-general) * 1.2);
+    background-color: #eee;
+    border-radius: 4px;
+    .tipIcon{
+      font-size: 24px;
+    }
+    .tipText{
+      font-size: 14px;
+      margin-left: 14px;
+    }
+  }
+  .startLinks{
+    display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  
+    .startCategory{
+      position: relative;
+      margin: 24px 0;
+      background-color: var(--c1);
+      border-radius: 12px;
+      padding: calc(var(--margin-general) * 1.2);
+      >h2 {
+        position: absolute;
+        top: -52px;
+        left: calc(var(--margin-general) * 1.2 - 6px);
+        color: var(--c0);
+        background-color: var(--c1);
+        padding: 8px 24px;
+        border-radius: 12px;
+      }
+    }
+  }
+  
