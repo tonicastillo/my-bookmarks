@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react'
-import { GeneralContext } from "./GeneralContext.jsx";
+import { GeneralContext } from "./GeneralContext";
 import classNames from "classnames";
 
 import HomeLinks from './BookmarksPageHomeLinks'
@@ -11,7 +11,7 @@ function App() {
   const [ editMode, setEditMode ] = useState(false)
   const [ isSearchFocused, setIsSearchFocused ] = useState(true)
   const generalContext = useContext(GeneralContext)
-  const { isLoading, filters, filteredBookmarks, bookmarks, bookmarksAtStart, categories, tags, updateCategoryFilter, getTagsSortedAsArray, updateTagsFilterToggle, updateSearchFilter, reloadData } = generalContext
+  const { isLoading, filters, filteredBookmarks, bookmarks, bookmarksAtStart, categories, tags, updateCategoryFilter, updateTagsFilterToggle, updateSearchFilter, reloadData } = generalContext
 
   const editModeToggle = () =>{
     setEditMode(!editMode)
@@ -32,6 +32,7 @@ function App() {
 
   // onsole.log(categories)
   // onsole.log(filteredBookmarks)
+  console.log(tags)
   return (
     <div className={s.bigContainer}>
       <Loading active={isLoading} />
@@ -60,17 +61,19 @@ function App() {
       }
       <ul className={s.tags}>
         {
-          getTagsSortedAsArray(tags).map((tagConverted, key) => {
-            const tag = tagConverted[0]
-            if(tags[tag].count === 0) return null
+          tags.sort((a,b) => a.name.localeCompare(b.name)).map((tag, key) => {
+            //todo if(tags[tag].count === 0) return null
             return (
               <li  key={key} className={classNames(s.tag, {
-                [s.tagActive]: filters.tags.includes(tag),
-                [s.size1]: tags[tag].count > 8 && tags[tag].count<= 16,
-                [s.size2]: tags[tag].count > 16 && tags[tag].count<= 24,
-                [s.size3]: tags[tag].count > 24,
-              })}><button onClick={() => updateTagsFilterToggle({tag:tag})}>
-                <strong>{tag}</strong> <span> {tags[tag].count}</span>
+                //todo
+                // [s.tagActive]: filters.tags.includes(tag),
+                // [s.size1]: tags[tag].count > 8 && tags[tag].count<= 16,
+                // [s.size2]: tags[tag].count > 16 && tags[tag].count<= 24,
+                // [s.size3]: tags[tag].count > 24,
+              })}>
+                <button onClick={() => updateTagsFilterToggle({tag:tag})}>
+                <strong>{tag.name}</strong>
+                {/* //todo <span> {tags[tag].count}</span> */}
               </button>
               </li>
             )})
@@ -85,7 +88,7 @@ function App() {
       }
       {!hasResults && bookmarksAtStart.length>0 && (
       
-      <HomeLinks />
+      <HomeLinks categories={categories} bookmarksAtStart={bookmarksAtStart} editMode={editMode} />
       )}
 
       {

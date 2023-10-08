@@ -5,7 +5,11 @@ export const getNotionDBItems = async (apikey: string, database_id: string) => {
     auth: apikey,
   });
 
-  return notion.databases.query({
+  const query = await notion.databases.query({
     database_id: database_id,
   });
+  const items:Array<any> = query?.results.map(i => {
+    return i
+  })
+  return items
 };

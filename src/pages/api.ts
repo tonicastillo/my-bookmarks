@@ -1,17 +1,14 @@
-import { getNotionDBItems } from "../components/notionService";
+import { getNotionDBItems } from "../services/notionService_ssr.ts";
 
 export async function GET() {
-  const bookmarksRequest = await getNotionDBItems(
+  const bookmarks = await getNotionDBItems(
     import.meta.env.NOTION_API_KEY,
     import.meta.env.NOTION_BOOKMARKS_DB
   );
-  const categoriesRequest = await getNotionDBItems(
+  const categories = await getNotionDBItems(
     import.meta.env.NOTION_API_KEY,
     import.meta.env.NOTION_CATS_DB
   );
-
-  const bookmarks = bookmarksRequest.results;
-  const categories = categoriesRequest.results;
 
   if (!bookmarks || !categories) {
     return new Response(null, {
@@ -27,3 +24,5 @@ export async function GET() {
     },
   });
 }
+
+

@@ -1,9 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import AppContainer from '../components/AppContainer.jsx';
+import AppContainer from '../components/AppContainer';
 ---
 
 
 <Layout title="Mu bookmarks">
-	<AppContainer client:load />
+	<AppContainer client:only="react" />
 </Layout>

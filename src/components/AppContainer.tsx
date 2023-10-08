@@ -1,8 +1,8 @@
 import React from "react";
 import GeneralContextProvider from "./GeneralContext";
-import BookmarksPage from './BookmarksPage.jsx';
+import BookmarksPage from './BookmarksPage';
 
-const AppContainer = ({children}) => (
+const AppContainer = () => (
   <GeneralContextProvider>
     <BookmarksPage />
   </GeneralContextProvider>

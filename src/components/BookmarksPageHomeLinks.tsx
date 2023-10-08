@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import classNames from "classnames";
 import s from "./BookmarksPage.module.scss";
 
-const HomeLinks = () => (
+const HomeLinks = ({categories, bookmarksAtStart, editMode}) => (
 	<ul className={classNames(s.startLinks)}>
 		{categories.map((cat, idx) => {
 			// onsole.log("filteredBookmarks.filter(b => b.catId === cat.nid)")

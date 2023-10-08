@@ -1,20 +1,24 @@
+
 import React, {createContext, useState, useEffect} from 'react'
-// import { getNotionItems } from './notionService'
 import Fuse from 'fuse.js'
+import { removeEmoji } from '../helpers/cleaningTools'
+import useCache from '../services/useCache'
+// import type { BookmarkProp, TagProp, BookmarksAPIRAWData } from '../types'
+import categoriesDataTransform from '../helpers/categoriesDataTransform'
+import bookmarksDataTransform from '../helpers/bookmarksDataTransform'
 
-const removeEmoji = str => {
-	return str.replaceAll(' ','').replaceAll(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
-
-}
-
+// @ts-ignore
 export const GeneralContext = createContext()
-
+// @ts-ignore
 const GeneralContextProvider = ({ children }) => {
 	const [ isLoading, setIsLoading ] = useState(false)
+	
+
+
 
 	const [ bookmarks, setBookmarks ] = useState([])
 	const [ categories, setCategories ] = useState([])
-	const [ tags, setTags ] = useState({})
+	const [ tags, setTags ] = useState([])
 
 	const [ filteredBookmarks, setFilteredBookmarks ] = useState([])
 	const [ bookmarksAtStart, setBookmarksAtStart ] = useState([])
@@ -27,23 +31,6 @@ const GeneralContextProvider = ({ children }) => {
 	const [ searchBookmarksIdx, setSearchBookmarksIdx ] = useState(null)
 
 
-//    ___   __    ___  _  _  ____
-//   / __) / _\  / __)/ )( \(  __)
-//  ( (__ /    \( (__ ) __ ( ) _)
-//   \___)\_/\_/ \___)\_)(_/(____)
-
-	const getCache = () => {
-		if (typeof(Storage) !== "undefined") {
-			const cachedBookmarks = localStorage.getItem("bookmarks");
-			if(!!cachedBookmarks){
-				updateBookmarks({ newBookmarks: JSON.parse(cachedBookmarks), cached: true} )
-			}
-			const cachedCategories = localStorage.getItem("categories");
-			if(!!cachedCategories){
-				updateCategories({ newCategories: JSON.parse(cachedCategories), cached: true} )
-			}
-		}
-	}
 
 //    ___  ____  ____    ____   __  ____  __
 //   / __)(  __)(_  _)  (    \ / _\(_  _)/ _\
@@ -51,16 +38,29 @@ const GeneralContextProvider = ({ children }) => {
 //   \___/(____) (__)   (____/\_/\_/(__)\_/\_/
 
 
-	const getData = async () => {
-		setIsLoading(true);
-		fetch('/api')
-			.then(res => res.json())
-			.then(data => {
-				updateBookmarks({ newBookmarks: data.bookmarks.map(bookmark => bookmark.json)})
-				updateCategories({newCategories: data.categories.map(category => category.json)})
-			});
-	}
+	const [ bookmarksAPIDataQuery, bookmarksAPIDataResult] = useCache()
 
+	useEffect(() => {
+		// @ts-ignore
+		bookmarksAPIDataQuery('/api')
+	}, [])
+
+	useEffect(() => {
+		console.log('bookmarksAPIDataResult')
+		console.log(bookmarksAPIDataResult)
+		// if(Array.isArray(BookmarksAPIDataResult))
+		//Transform and extraxt necesary data of RAW API data
+		//Bookmarks
+		// @ts-ignore
+		if(!!bookmarksAPIDataResult?.bookmarks && !!bookmarksAPIDataResult?.categories){
+			// @ts-ignore
+			setBookmarks(bookmarksDataTransform(bookmarksAPIDataResult?.bookmarks))
+			// @ts-ignore
+			setCategories(categoriesDataTransform(bookmarksAPIDataResult?.categories))
+		}
+	}, [bookmarksAPIDataResult])
+
+	// @ts-ignore
 	const updateBookmarks = ({newBookmarks, cached}) => {
 		if(!cached){
 			localStorage.setItem("bookmarks", JSON.stringify(newBookmarks))
@@ -69,6 +69,8 @@ const GeneralContextProvider = ({ children }) => {
 
 		setBookmarks(newBookmarks)
 	}
+	
+	// @ts-ignore
 	const updateCategories = ({newCategories, cached}) => {
 		if(!cached){
 			localStorage.setItem("categories", JSON.stringify(newCategories))
@@ -76,31 +78,51 @@ const GeneralContextProvider = ({ children }) => {
 		}
 		setCategories(newCategories)
 	}
-	useEffect(() => {
-
-		getCache();
-		getData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
 
 	useEffect(() => {
 		if(!!bookmarks?.length  &&  !!categories?.length){
 
-			const newTags = {}
+			// const newTags = {}
+			// bookmarks.forEach((bookmark) => {
+			// 	// @ts-ignore
+			// 	bookmark.tags.forEach(tag => {
+			// 		if(tag.name!==""){
+			// 			// @ts-ignore
+			// 			if(!newTags[tag]){
+			// 				// @ts-ignore
+			// 				newTags[tag] = {
+			// 					count: 1,
+			// 				}
+			// 			} else {
+			// 				// @ts-ignore
+			// 				newTags[tag].count++;
+			// 			}
+			// 		}
+			// 	})
+			// })
+
+
+			const newTags:Array<any> = []
 			bookmarks.forEach((bookmark) => {
+				console.log({newTags})
+				// @ts-ignore
 				bookmark.tags.forEach(tag => {
-					if(tag!==""){
-						if(!newTags[tag]){
-							newTags[tag] = {
-								count: 1,
-							}
+					if(tag.name!==""){
+						// @ts-ignore
+						
+						if(newTags.find(newTag => newTag.id === tag.id)){
+							// @ts-ignore
+							newTags.find(newTag => newTag.id === tag.id).count=newTags.find(newTag => newTag.nid === tag.nid).count + 1
 						} else {
-							newTags[tag].count++;
+							// @ts-ignore
+							newTags.push({
+								...tag,
+								count: 1
+							})
 						}
 					}
 				})
 			})
-
 
 			setTags(newTags)
 			filtersRefresh()
@@ -113,7 +135,8 @@ const GeneralContextProvider = ({ children }) => {
 
 
 	const updateBookmarksAtStart = () => {
-		setBookmarksAtStart(bookmarks.filter(b => b.isVisibleAtStart))
+		// @ts-ignore
+		setBookmarksAtStart(bookmarks.filter(b => b.isAtStart))
 	}
 
 
@@ -126,14 +149,17 @@ const GeneralContextProvider = ({ children }) => {
 		const newCatId = catId === filters.category ? '' : catId
 		setFilters(filters => ({ ...filters, category: newCatId}))
 	}
+	// @ts-ignore
 	const updateTagsFilterAdd = ({tag}) => {
 		setFilters(filters => ({ ...filters, tags: [...filters.tags, tag]}))
 	}
+	// @ts-ignore
 	const updateTagsFilterRemove = ({tag}) => {
 		setFilters(filters => ({ ...filters, tags: filters.tags.filter(currentTag => currentTag !== tag)}))
 	}
-
+	// @ts-ignore
 	const updateTagsFilterToggle = ({tag}) => {
+		// @ts-ignore
 		if(filters.tags.includes(tag)){
 			updateTagsFilterRemove({tag:tag})
 		} else {
@@ -154,6 +180,7 @@ const GeneralContextProvider = ({ children }) => {
 			keys: ['name', 'subtitle', 'tags', 'url'],
 		}
 		if(bookmarks.length > 0 && searchBookmarksIdx===null){
+			// @ts-ignore
 			setSearchBookmarksIdx(new Fuse(bookmarks, fuseOptions))
 		}
 	}
@@ -173,7 +200,9 @@ const GeneralContextProvider = ({ children }) => {
 		//String
 		if(filters.searchString !== ''){
 			if(searchBookmarksIdx!==null){
+				// @ts-ignore
 				const indexesResult = searchBookmarksIdx.search(filters.searchString)
+				// @ts-ignore
 				newFilteredBookmarks = indexesResult.map(index => index.item)
 			}
 		}
@@ -184,22 +213,24 @@ const GeneralContextProvider = ({ children }) => {
 		filtersRefresh()
 	},[filters])
 
-	const updateBookmarksByTags = () =>{
-		const newTags = {}
-		Object.keys(tags).map((tag) => {
-			newTags[tag] = {count: 0}
-		})
-		filteredBookmarks.forEach((bookmark) => {
-			bookmark.tags.forEach(tag => {
-				if(tag!=="") {
-					if(!newTags[tag]) newTags[tag] = { count: 0}
+	const updateBookmarksByTags = () =>{ //todo
+		// const newTags = tags.map((tag) => ({
+		// 	...tag,
+		// 	count: 0
+		// }))
+		// filteredBookmarks.forEach((bookmark) => {
+		// 	// @ts-ignore
+		// 	bookmark.tags.forEach(tag => {
+		// 		if(tag.name!=="") {
+		// 			// @ts-ignore
+		// 			if(!newTags[tag]) newTags[tag] = { count: 0}
+		// 			// @ts-ignore
+		// 			newTags[tag].count++;
 
-					newTags[tag].count++;
-
-				}
-			})
-		})
-		setTags(newTags)
+		// 		}
+		// 	})
+		// })
+		// setTags(newTags)
 	}
 
 	useEffect(() => {
@@ -207,22 +238,23 @@ const GeneralContextProvider = ({ children }) => {
 	},[filteredBookmarks])
 
 
-	const getTagsSortedAsArray = (ts) => {
-		const tagsAsArray = Object.entries(ts);
+	// @ts-ignore
+	// const getTagsSortedAsArray = (ts) => {
+	// 	const tagsAsArray = Object.entries(ts);
 
-		return tagsAsArray.sort((a,b) => {
+	// 	return tagsAsArray.sort((a,b) => {
 
-			//Por nombre
-			if (removeEmoji(a[0].toLowerCase()) > removeEmoji(b[0].toLowerCase())) {
-				return 1;
-			}
-			if (removeEmoji(a[0].toLowerCase()) < removeEmoji(b[0].toLowerCase())) {
-				return -1;
-			}
+	// 		//Por nombre
+	// 		if (removeEmoji(a[0].toLowerCase()) > removeEmoji(b[0].toLowerCase())) {
+	// 			return 1;
+	// 		}
+	// 		if (removeEmoji(a[0].toLowerCase()) < removeEmoji(b[0].toLowerCase())) {
+	// 			return -1;
+	// 		}
 
-			return 0;
-		})
-	}
+	// 		return 0;
+	// 	})
+	// }
 
 
 	return (
@@ -237,7 +269,6 @@ const GeneralContextProvider = ({ children }) => {
 
 				isLoading: isLoading,
 
-				reloadData: getData,
 
 				updateCategoryFilter: updateCategoryFilter,
 				updateTagsFilterToggle: updateTagsFilterToggle,
@@ -246,7 +277,7 @@ const GeneralContextProvider = ({ children }) => {
 				updateSearchFilter: updateSearchFilter,
 
 				//helperts
-				getTagsSortedAsArray: getTagsSortedAsArray,
+				// getTagsSortedAsArray: getTagsSortedAsArray,
 
 			}}
 		>
@@ -256,4 +287,4 @@ const GeneralContextProvider = ({ children }) => {
 
 }
 
-export default GeneralContextProvider
+export default GeneralContextProvider;
