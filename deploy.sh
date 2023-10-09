@@ -4,7 +4,7 @@ read answer
 if [ "$answer" = "y" ]; then
   echo "Updating the image..."
   git pull
-  docker build -t mybookmarks -f Dockerfile .
+  docker build --no-cache -t mybookmarks -f Dockerfile .
   docker-compose up -d
 else
   echo "The image will not be updated."
