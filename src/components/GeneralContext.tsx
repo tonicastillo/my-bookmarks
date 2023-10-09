@@ -104,7 +104,7 @@ const GeneralContextProvider = ({ children }) => {
 
 			const newTags:Array<any> = []
 			bookmarks.forEach((bookmark) => {
-				console.log({newTags})
+				// console.log({newTags})
 				// @ts-ignore
 				bookmark.tags.forEach(tag => {
 					if(tag.name!==""){
