@@ -1,12 +1,12 @@
-echo "¿Quieres actualizar la imagen con el nuevo código fuente? (s/n)"
-read respuesta
+echo "Do you want to update the image with the new source code? (y/n)"
+read answer
 
-if [ "$respuesta" = "s" ] || [ "$respuesta" = "y" ]; then
-  echo "Actualizando la imagen..."
+if [ "$answer" = "y" ]; then
+  echo "Updating the image..."
   git pull
   docker build -t mybookmarks -f Dockerfile .
-  docker run -p 4001:4321 mybookmarks
+  docker-compose up -d
 else
-  echo "No se actualizará la imagen."
+  echo "The image will not be updated."
 fi
 
