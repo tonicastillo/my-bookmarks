@@ -30,12 +30,13 @@ const bookmarksDataTransform = (bookmarksRawData: any) =>
       catId: catId,
       url: props.URL.url,
       alternateUrl:
-        typeof props.AlternateURL.url === "string"
+        typeof props.AlternateURL.url === "string" &&
+        props.AlternateURL.url !== props.URL.url
           ? props.AlternateURL.url
           : "",
       imageUrl: imageUrl,
       name: props.Name.title[0].text.content,
-      notionUrl: props.url,
+      notionUrl: b.url,
       isAtStart: props["Visible at Start"].checkbox,
       tags: props.Tags["multi_select"],
       description: description,

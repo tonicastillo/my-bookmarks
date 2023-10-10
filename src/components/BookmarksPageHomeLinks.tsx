@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import classNames from "classnames";
 import s from "./BookmarksPage.module.scss";
+import BookmarkLink from './BookmarkLink'
 
-const HomeLinks = ({categories, bookmarksAtStart, editMode}) => (
+const HomeLinks = ({categories, bookmarksAtStart, isEditMode}) => (
 	<ul className={classNames(s.startLinks)}>
 		{categories.map((cat, idx) => {
 			// onsole.log("filteredBookmarks.filter(b => b.catId === cat.nid)")
@@ -17,28 +18,10 @@ const HomeLinks = ({categories, bookmarksAtStart, editMode}) => (
 					<ul className={s.bookmarks}>
 						{currentCatBookmarks.map((bookmark, idx) => (
 							<li key={idx} className={classNames(s.bookmark)}>
-								<a
-									className={s.bookmarkLink}
-									href={bookmark.url}
-									target="_blank"
-								>
-									{bookmark.imageUrl && <img src={bookmark.imageUrl} />}
-									<strong>{bookmark.name}</strong>
-								</a>
-								{bookmark.alternateUrl && (
-									<a className={s.externalLink} href={bookmark.alternateUrl}>
-										🌍
-									</a>
-								)}
-								{editMode && (
-									<a
-										className={s.editLink}
-										href={bookmark.notionUrl}
-										target="_blank"
-									>
-										✏️
-									</a>
-								)}
+								<BookmarkLink
+									bookmark={bookmark}
+									isEditMode={isEditMode}
+								/>
 							</li>
 						))}
 					</ul>

@@ -46,17 +46,16 @@ const GeneralContextProvider = ({ children }) => {
 	}, [])
 
 	useEffect(() => {
-		console.log('bookmarksAPIDataResult')
-		console.log(bookmarksAPIDataResult)
-		// if(Array.isArray(BookmarksAPIDataResult))
-		//Transform and extraxt necesary data of RAW API data
-		//Bookmarks
 		// @ts-ignore
 		if(!!bookmarksAPIDataResult?.bookmarks && !!bookmarksAPIDataResult?.categories){
 			// @ts-ignore
 			setBookmarks(bookmarksDataTransform(bookmarksAPIDataResult?.bookmarks))
 			// @ts-ignore
-			setCategories(categoriesDataTransform(bookmarksAPIDataResult?.categories))
+			const categoriesData = categoriesDataTransform(bookmarksAPIDataResult?.categories)
+			const categoriesSorted = categoriesData
+			categoriesSorted.sort((a, b) => (a?.level || 0) - (b?.level || 0) || (a?.order || 0) - (b?.order || 0))
+			console.log(categoriesSorted)
+			setCategories(categoriesSorted)
 		}
 	}, [bookmarksAPIDataResult])
 
@@ -104,7 +103,6 @@ const GeneralContextProvider = ({ children }) => {
 
 			const newTags:Array<any> = []
 			bookmarks.forEach((bookmark) => {
-				// console.log({newTags})
 				// @ts-ignore
 				bookmark.tags.forEach(tag => {
 					if(tag.name!==""){

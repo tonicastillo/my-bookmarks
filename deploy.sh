@@ -5,7 +5,7 @@ if [ "$answer" = "y" ]; then
   echo "Updating the image..."
   git pull
   docker build --no-cache -t mybookmarks -f Dockerfile .
-  docker-compose up -d
+  docker-compose up -d --force-recreate
 else
   echo "The image will not be updated."
 fi

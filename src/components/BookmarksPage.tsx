@@ -8,13 +8,13 @@ import Loading from './Loading'
 import s from "./BookmarksPage.module.scss"
 
 function App() {
-  const [ editMode, setEditMode ] = useState(false)
+  const [ isEditMode, setEditMode ] = useState(false)
   const [ isSearchFocused, setIsSearchFocused ] = useState(true)
   const generalContext = useContext(GeneralContext)
   const { isLoading, filters, filteredBookmarks, bookmarks, bookmarksAtStart, categories, tags, updateCategoryFilter, updateTagsFilterToggle, updateSearchFilter, reloadData } = generalContext
 
   const editModeToggle = () =>{
-    setEditMode(!editMode)
+    setEditMode(!isEditMode)
   }
 
   const updateSearchInputFocused = (isFocused) =>{
@@ -32,12 +32,11 @@ function App() {
 
   // onsole.log(categories)
   // onsole.log(filteredBookmarks)
-  console.log(tags)
   return (
     <div className={s.bigContainer}>
       <Loading active={isLoading} />
       <div className={s.editModeActions}>
-        { editMode && (<div className={s.editModeRefreshButton} onClick={editModeReload}>🔁️</div>)}
+        { isEditMode && (<div className={s.editModeRefreshButton} onClick={editModeReload}>🔁️</div>)}
         <div className={s.editModeToggleButton}
         onClick={editModeToggle}>✏️</div>
       </div>
@@ -88,7 +87,7 @@ function App() {
       }
       {!hasResults && bookmarksAtStart.length>0 && (
       
-      <HomeLinks categories={categories} bookmarksAtStart={bookmarksAtStart} editMode={editMode} />
+      <HomeLinks categories={categories} bookmarksAtStart={bookmarksAtStart} isEditMode={isEditMode} />
       )}
 
       {
