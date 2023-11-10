@@ -3,6 +3,7 @@ import { GeneralContext } from "./GeneralContext";
 import classNames from "classnames";
 
 import HomeLinks from './BookmarksPageHomeLinks'
+import FilteredLinks from './BookmarksFilteredLinks'
 
 import Loading from './Loading'
 import s from "./BookmarksPage.module.scss"
@@ -12,11 +13,10 @@ function App() {
   const [ isSearchFocused, setIsSearchFocused ] = useState(true)
   const generalContext = useContext(GeneralContext)
   const { isLoading, filters, filteredBookmarks, bookmarks, bookmarksAtStart, categories, tags, updateCategoryFilter, updateTagsFilterToggle, updateSearchFilter, reloadData } = generalContext
-
   const editModeToggle = () =>{
     setEditMode(!isEditMode)
   }
-
+console.log({filteredBookmarks})
   const updateSearchInputFocused = (isFocused) =>{
     setIsSearchFocused(isFocused)
   }
@@ -65,7 +65,7 @@ function App() {
             return (
               <li  key={key} className={classNames(s.tag, {
                 //todo
-                // [s.tagActive]: filters.tags.includes(tag),
+                [s.tagActive]: filters.tags.includes(tag),
                 // [s.size1]: tags[tag].count > 8 && tags[tag].count<= 16,
                 // [s.size2]: tags[tag].count > 16 && tags[tag].count<= 24,
                 // [s.size3]: tags[tag].count > 24,
@@ -97,22 +97,12 @@ function App() {
         //   ) _)  )( / (_/\ )(   ) _)  )   / ) _)  ) D (  / (_/\ )( /    / )  ( \___ \
         //  (__)  (__)\____/(__) (____)(__\_)(____)(____/  \____/(__)\_)__)(__\_)(____/
       }
-
-      {filteredBookmarks.length>0 && hasResults && (<ul className={s.bookmarks}>
-        {
-          filteredBookmarks.map((bookmark, idx) => (
-            <li key={idx} className={classNames(s.bookmark)}>
-              {/*<li key={idx} className={classNames(bookmark.tags.map(tag => tag.replace(' ', '')))}>*/}
-              <a className={s.bookmarkLink} href={bookmark.url} target="_blank">{
-                bookmark.imageUrl && (<img src={bookmark.imageUrl} />)
-              }<strong>{bookmark.name}</strong></a>
-              { editMode && (
-                <a className={s.editLink} href={bookmark.notionUrl} target="_blank">✏️</a>
-              )}
-            </li>
-          ))
-        }
-      </ul>)}
+      
+      {
+        filteredBookmarks.length>0 && hasResults && 
+      (<FilteredLinks bookmarks={filteredBookmarks} isEditMode={isEditMode} />)
+      
+      }
 
 
       {

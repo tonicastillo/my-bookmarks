@@ -158,6 +158,7 @@ const GeneralContextProvider = ({ children }) => {
 	// @ts-ignore
 	const updateTagsFilterToggle = ({tag}) => {
 		// @ts-ignore
+		console.log(tag)
 		if(filters.tags.includes(tag)){
 			updateTagsFilterRemove({tag:tag})
 		} else {
@@ -184,15 +185,21 @@ const GeneralContextProvider = ({ children }) => {
 	}
 
 	const filtersRefresh = () => {
+		let newFilteredBookmarks = [...bookmarks]
 		//Category
-		let newFilteredBookmarks = bookmarks
-		if(filters.category !== ''){
-			newFilteredBookmarks = newFilteredBookmarks.filter(bookmark => bookmark.catId === filters.category)
-		}
+		// if(filters.category !== ''){
+		// 	newFilteredBookmarks = newFilteredBookmarks.filter(bookmark => bookmark.catId === filters.category)
+		// }
 		//Tag
 		if(filters.tags.length){
-			filters.tags.map(tag => {
-				newFilteredBookmarks = newFilteredBookmarks.filter(bookmark => bookmark.tags.includes(tag))
+			
+			// @ts-ignore
+			newFilteredBookmarks = newFilteredBookmarks.filter(bookmark => {
+				// @ts-ignore
+				return filters.tags.every(tag => {
+					// @ts-ignore
+					return bookmark.tags.some(bookmarkTag => bookmarkTag.id === tag.id)
+				})
 			})
 		}
 		//String
@@ -209,9 +216,9 @@ const GeneralContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		filtersRefresh()
-	},[filters])
+	},[filters, tags])
 
-	const updateBookmarksByTags = () =>{ //todo
+	// const updateBookmarksByTags = () =>{ //todo
 		// const newTags = tags.map((tag) => ({
 		// 	...tag,
 		// 	count: 0
@@ -229,11 +236,11 @@ const GeneralContextProvider = ({ children }) => {
 		// 	})
 		// })
 		// setTags(newTags)
-	}
+	// }
 
-	useEffect(() => {
-		updateBookmarksByTags()
-	},[filteredBookmarks])
+	// useEffect(() => {
+	// 	updateBookmarksByTags()
+	// },[filteredBookmarks])
 
 
 	// @ts-ignore

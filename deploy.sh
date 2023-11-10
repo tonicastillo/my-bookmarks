@@ -3,11 +3,11 @@ read answer
 
 if [ "$answer" = "y" ]; then
   echo "Updating the image..."
+  docker image prune -a -f
   git pull origin main
   docker-compose down
   docker build --no-cache -t mybookmarks -f Dockerfile .
   docker-compose up -d --force-recreate
-  docker rmi $(docker images 'mybookmarks' -a -q) -f
 else
   echo "The image will not be updated."
 fi
