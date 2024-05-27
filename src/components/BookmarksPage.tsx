@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useState, useEffect, useRef} from 'react'
 import { GeneralContext } from "./GeneralContext";
 import classNames from "classnames";
 
@@ -9,6 +9,8 @@ import Loading from './Loading'
 import s from "./BookmarksPage.module.scss"
 
 function App() {
+  const searchElementRef = useRef()
+
   const [ isEditMode, setEditMode ] = useState(false)
   const [ isSearchFocused, setIsSearchFocused ] = useState(true)
   const generalContext = useContext(GeneralContext)
@@ -16,7 +18,7 @@ function App() {
   const editModeToggle = () =>{
     setEditMode(!isEditMode)
   }
-console.log({filteredBookmarks})
+// console.log({filteredBookmarks})
   const updateSearchInputFocused = (isFocused) =>{
     setIsSearchFocused(isFocused)
   }
@@ -30,6 +32,18 @@ console.log({filteredBookmarks})
   }
   const hasResults = bookmarks.length !== filteredBookmarks.length
 
+  // Check url params
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.slice(1));
+    const searchStringInUrl = hashParams.get('s')
+    if(searchStringInUrl){
+      updateSearchFilter({searchString:searchStringInUrl})
+      if(searchElementRef.current){
+        searchElementRef.current.value = searchStringInUrl
+      }
+    }
+  }, [])
+
   // onsole.log(categories)
   // onsole.log(filteredBookmarks)
   return (
@@ -42,6 +56,7 @@ console.log({filteredBookmarks})
       </div>
       <div className={s.bigSearchContainer}>
         <input
+          ref={searchElementRef}
           autoFocus={true}
           className={s.bigSearch}
           type="search"
